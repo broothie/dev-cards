@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Catan</title>
+</head>
+<body>
+  <h1>Catan, Yo</h1>
+  <form action="/new" method="post"><button type="submit">New Original Deck</button></form>
+  <form action="/new?type=expansion" method="post"><button type="submit">New Expansion Deck</button></form>
+
+  <form action="/game/find" method="post">
+    <h2>Find Game</h2>
+    <label for="game_code">Game Code</label>
+    <input type="text" id="game_code" name="game_code">
+    <button type="submit">Find</button>
+  </form>
+</body>
+</html>
