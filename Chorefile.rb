@@ -1,8 +1,12 @@
 
 def publish(message)
-	puts `chore bundle`
 	docker
 	git(message)
+end
+
+def clean
+	#$ bundle
+	puts `rm -rf dist`
 end
 
 def git(message)

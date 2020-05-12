@@ -7,18 +7,11 @@
   "license": "MIT",
   "scripts": {
     "frontend": "parcel src/index.html",
-    "bundle": "parcel build src/index.html --public-url /dist && mv dist/index.html .",
+    "bundle": "parcel build src/index.html --public-url dist && mv dist/index.html .",
     "backend": "ruby app.rb"
   },
   "devDependencies": {
-    "@vue/component-compiler-utils": "^3.1.2",
     "mithril": "^2.0.4",
-    "parcel-bundler": "^1.12.4",
-    "typescript": "^3.8.3",
-    "vue": "^2.6.11",
-    "vue-template-compiler": "^2.6.11"
-  },
-  "dependencies": {
-    "vue-hot-reload-api": "^2.3.4"
+    "parcel-bundler": "^1.12.4"
   }
 }
