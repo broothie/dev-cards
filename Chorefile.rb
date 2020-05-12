@@ -4,8 +4,11 @@ def publish(message)
 	git(message)
 end
 
+def backend
+	puts `ruby app.rb`
+end
+
 def clean
-	#$ bundle
 	puts `rm -rf dist`
 end
 

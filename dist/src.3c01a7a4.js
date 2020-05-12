@@ -54,4 +54,4 @@ var o=arguments[3],e=require("./polyfill");"undefined"!=typeof window?(void 0===
 },{"mithril":"hSyH","./api":"cZF8"}],"Focm":[function(require,module,exports) {
 "use strict";var e=u(require("mithril")),t=u(require("./js/home")),r=u(require("./js/game"));function u(e){return e&&e.__esModule?e:{default:e}}document.addEventListener("DOMContentLoaded",function(){var u=document.getElementById("root");e.default.route(u,"/",{"/":t.default,"/game/:code":r.default})});
 },{"mithril":"hSyH","./js/home":"nqs3","./js/game":"IEHn"}]},{},["Focm"], null)
-//# sourceMappingURL=dist/src.3c01a7a4.js.map
+//# sourceMappingURL=/dev-cards/dist/src.3c01a7a4.js.map

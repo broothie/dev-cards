@@ -7,8 +7,7 @@
   "license": "MIT",
   "scripts": {
     "frontend": "parcel src/index.html",
-    "bundle": "parcel build src/index.html --public-url dist && mv dist/index.html .",
-    "backend": "ruby app.rb"
+    "bundle": "parcel build src/index.html --public-url /dev-cards/dist && mv dist/index.html ."
   },
   "devDependencies": {
     "mithril": "^2.0.4",
