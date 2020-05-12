@@ -3,13 +3,16 @@ import {get_game, new_game} from "./api";
 
 export default () => {
     let game_code = '';
+    let error = null;
 
     const create_game = type => () => {
-        new_game(type).then(game => m.route.set(`/game/${game.code}`));
+        new_game(type).then(({ code }) => m.route.set(`/game/${code}`));
     };
 
     const load_game = () => {
-        get_game(game_code).then(game => m.route.set(`/game/${game.code}`));
+        get_game(game_code)
+            .then(game => m.route.set(`/game/${game.code}`))
+            .catch(({ response }) => error = response.message);
     };
 
     const onclick = e => {
@@ -35,6 +38,7 @@ export default () => {
                 ]),
                 m('div', [
                     m('h2', '...or join a game'),
+                    error && m('p', {style: 'color:red;'}, error),
                     m('input', {type: 'text', placeholder: 'abc123', onkeydown, oninput, onchange}),
                     m('button', {onclick}, 'Find Game')
                 ])

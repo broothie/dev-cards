@@ -7,11 +7,15 @@ export default () => {
 
     let interval = null;
     let remaining = null;
+    let enabled = true;
 
     const onclick = () => {
+        enabled = false;
+
         draw_card(code)
-            .then(data => alert(`You drew a ${data.card}!`))
-            .then(update);
+            .then(({ card }) => alert(`You drew a ${card}!`))
+            .then(update)
+            .then(() => enabled = true);
     };
 
     const update = () => {
@@ -21,7 +25,7 @@ export default () => {
     return {
         oninit: () => {
             update();
-            // interval = setInterval(update, 1000 / 2);
+            interval = setInterval(update, 1000 / 2);
         },
         onremove: () => {
             clearInterval(interval);
@@ -29,7 +33,7 @@ export default () => {
         view: () => m('div', [
             m('h1', `Game ${code}`),
             m('p', `Dev cards remaining: ${remaining}`),
-            m('button', {onclick}, 'Draw a card')
+            m('button', {onclick, disabled: !enabled || remaining === 0}, 'Draw a card')
         ])
     }
 };
