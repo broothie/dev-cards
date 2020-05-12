@@ -11,6 +11,7 @@ end
 def git(message)
 	puts `git add -A`
 	puts `git commit -m "#{message}"`
+	puts `git push`
 end
 
 def docker
