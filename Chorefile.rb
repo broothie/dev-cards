@@ -1,11 +1,8 @@
 
 def publish(message)
+	puts `chore bundle`
 	docker
 	git(message)
-end
-
-def frontend
-	puts `chore bundle`
 end
 
 def git(message)
