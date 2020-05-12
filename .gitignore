@@ -1,1 +1,4 @@
 catan.json
+.byebug_history
+.cache
+node_modules
