@@ -1,7 +1,11 @@
+require 'net/http'
+require_relative 'env'
 
 publish do |message|
   invoke :docker
+  invoke :bundle
   invoke :git, message
+  invoke :purge
 end
 
 backend do
@@ -11,6 +15,7 @@ end
 clean do
   sh? 'rm -rf dist index.html'
   sh? 'rm -rf .cache'
+  sh? 'rm -rf .byebug_history'
 end
 
 git do |message|
@@ -23,4 +28,18 @@ tag = 'gcr.io/catan-274322/catan'
 docker do
   sh "docker build . -t #{tag}"
   sh "docker push #{tag}"
+end
+
+purge do
+  uri = URI("https://api.cloudflare.com/client/v4/zones/#{CONFIG.cloudflare_zone_identifier}/purge_cache")
+  res = Net::HTTP.post(uri, { purge_everything: true }.to_json,
+    'Authorization' => "Bearer #{CONFIG.cloudflare_api_token}",
+    'Content-Type' => 'application/json',
+  )
+
+  if res.code == '200'
+    puts 'purged cache'
+  else
+    puts "failed to purge cache: #{res.body}"
+  end
 end
