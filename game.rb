@@ -1,26 +1,50 @@
+require 'google/cloud/firestore'
+
 class Game
   attr_accessor :code
   attr_accessor :deck
   attr_accessor :discard
+  attr_accessor :players
+
+  class Error < StandardError; end
+  class NotFoundError < Error; end
 
   GAMES = Google::Cloud::Firestore
     .new(project_id: 'catan-274322', credentials: 'catan.json')
     .collection('games')
 
-  def initialize(code:, deck:, discard: [])
+  def initialize(code:, deck:, discard: [], players: [])
     @code = code
     @deck = deck
     @discard = discard
+    @players = players
   end
 
-  def draw!
+  def draw(player)
+    raise 'invalid player' unless player_exists?(player)
     return nil if deck.empty?
 
     card = deck.pop
-    discard.push(card)
+    discard.push(player => card)
     save!
 
     card
+  end
+
+  def add_player(player)
+    raise 'player already exists' if player_exists?(player)
+    players << player
+    save!
+  end
+
+  def player_exists?(player)
+    players.include?(player)
+  end
+
+  def player_counts
+    discard.each_with_object(Hash.new(0)) do |discard, counts|
+      counts[discard.keys.first] += 1
+    end
   end
 
   def save!
@@ -28,7 +52,7 @@ class Game
   end
 
   def data
-    { code: code, deck: deck, discard: discard }
+    { code: code, deck: deck, discard: discard, players: players }
   end
 
   class << self
@@ -44,7 +68,7 @@ class Game
 
     def get(code)
       data = GAMES.doc(code).get.data
-      return nil unless data
+      raise NotFoundError unless data
       new(data)
     end
 

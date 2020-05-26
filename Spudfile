@@ -1,0 +1,26 @@
+
+publish do |message|
+  invoke :docker
+  invoke :git, message
+end
+
+backend do
+  shh 'ruby app.rb'
+end
+
+clean do
+  sh? 'rm -rf dist index.html'
+  sh? 'rm -rf .cache'
+end
+
+git do |message|
+  sh 'git add -A'
+  sh "git commit -m '#{message}'"
+  sh 'git push'
+end
+
+tag = 'gcr.io/catan-274322/catan'
+docker do
+  sh "docker build . -t #{tag}"
+  sh "docker push #{tag}"
+end

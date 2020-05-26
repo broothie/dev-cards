@@ -1,46 +1,40 @@
 import m from 'mithril';
-import {get_game, new_game} from "./api";
+import * as api from "./api";
+import text_input from "./text_input";
 
 export default () => {
-    let game_code = '';
-    let error = null;
+    let data = { game_code: null };
+    let error = m.route.param('error');
 
     const create_game = type => () => {
-        new_game(type).then(({ code }) => m.route.set(`/game/${code}`));
+        api.create_game(type).then(({code}) => m.route.set(`/game/${code}/join`));
     };
 
-    const load_game = () => {
-        get_game(game_code)
-            .then(game => m.route.set(`/game/${game.code}`))
-            .catch(({ response }) => error = response.message);
-    };
+    const reroute_to_join = () => m.route.set(`/game/${data.game_code}/join`);
 
     const onclick = e => {
         e.preventDefault();
-        load_game();
+        reroute_to_join();
     };
 
-    const onkeydown = e => {
-        game_code = e.target.value;
-        if (e.key === 'Enter') load_game();
-    };
-    const oninput = onkeydown;
-    const onchange = onkeydown;
+    const key_events = text_input(data, reroute_to_join);
 
     return {
         view: () => m('div', [
             m('h1', 'Catan Dev Card Deck Simulator'),
             m('div', [
                 m('div', [
-                    m('h2', 'Start a new game'),
-                    m('button', {onclick: create_game('original')}, 'New Original Deck'),
-                    m('button', {onclick: create_game('expansion')}, 'New Expansion Deck'),
+                    error && m('p', {style: 'color:red;'}, error),
+                    m('h2', 'Join a game'),
+                    m('input', {type: 'text', placeholder: 'GAME CODE', ...key_events('game_code')}),
+                    m('span', ' '),
+                    m('button', {onclick}, 'Play')
                 ]),
                 m('div', [
-                    m('h2', '...or join a game'),
-                    error && m('p', {style: 'color:red;'}, error),
-                    m('input', {type: 'text', placeholder: 'abc123', onkeydown, oninput, onchange}),
-                    m('button', {onclick}, 'Find Game')
+                    m('h2', '...or start a new game'),
+                    m('button', {onclick: create_game('original')}, 'New Original Deck'),
+                    m('span', ' '),
+                    m('button', {onclick: create_game('expansion')}, 'New Expansion Deck'),
                 ])
             ])
         ])

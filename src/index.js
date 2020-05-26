@@ -1,5 +1,6 @@
 import m from 'mithril';
 import Home from './js/home';
+import Join from'./js/join';
 import Game from'./js/game';
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -7,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     m.route(root, '/', {
         '/': Home,
+        '/game/:code/join': Join,
         '/game/:code': Game
     });
 });

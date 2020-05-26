@@ -1,9 +1,7 @@
 require 'sinatra'
 require 'sinatra/reloader' if development?
-require 'google/cloud/firestore'
 require 'sinatra/json'
 require 'json'
-
 require_relative 'game'
 
 before do
@@ -14,26 +12,48 @@ get '/' do
   redirect 'https://andrewbooth.xyz/dev-cards'
 end
 
+# Create a game
 post '/games' do
   game = Game.create(params['type'])
   json code: game.code
 end
 
-get '/games/:code' do |code|
-  game = Game.get(code)
-  bail 404, 'game not found' unless game
+# Join a game
+post '/games/:code/join' do |code|
+  code.downcase!
 
-  json code: game.code, remaining: game.deck.count
+  game = Game.get(code)
+  player = params['player']
+  game.add_player(player)
 end
 
-get '/games/:code/draw' do |code|
-  game = Game.get(code)
-  bail 404, 'game not found' unless game
+# Get a game
+get '/games/:code' do |code|
+  code.downcase!
 
-  card = game.draw!
+  game = Game.get(code)
+  player = params['player']
+  bail 422, 'missing player' unless game.player_exists?(player)
+
+  json remaining: game.deck.size, player_counts: game.player_counts
+end
+
+# Draw a card
+get '/games/:code/draw' do |code|
+  code.downcase!
+
+  game = Game.get(code)
+  player = params['player']
+  bail 422, 'missing player' unless game.player_exists?(player)
+
+  card = game.draw(player)
   bail 404, 'no cards left' unless card
 
   json card: card
+end
+
+error Game::NotFoundError do
+  bail 404, 'game not found'
 end
 
 helpers do
@@ -41,4 +61,3 @@ helpers do
     halt status, { message: message }.merge(rest).to_json
   end
 end
-

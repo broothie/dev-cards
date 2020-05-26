@@ -12,5 +12,9 @@
   "devDependencies": {
     "mithril": "^2.0.4",
     "parcel-bundler": "^1.12.4"
+  },
+  "dependencies": {
+    "js-cookie": "^2.2.1",
+    "lodash": "^4.17.15"
   }
 }
