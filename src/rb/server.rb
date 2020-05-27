@@ -5,11 +5,12 @@ require 'json'
 require_relative 'game'
 
 before do
-  headers 'Access-Control-Allow-Origin' => '*'
-  headers 'Access-Control-Allow-Methods' => '*'
+  if request.options?
+    headers 'Access-Control-Allow-Origin' => '*'
+    headers 'Access-Control-Allow-Methods' => '*'
+    halt 200
+  end
 end
-
-options('*') { 200 }
 
 get '/' do
   redirect 'https://andrewbooth.xyz/dev-cards'

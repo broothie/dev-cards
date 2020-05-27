@@ -32,8 +32,8 @@ end
 # Docker
 tag = 'gcr.io/catan-274322/catan'
 docker do
-  invoke :docker_build
-  invoke :docker_push
+  invoke 'docker.build'
+  invoke 'docker.push'
 end
 
 rule 'docker.build' do
