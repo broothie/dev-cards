@@ -1,7 +1,8 @@
 require 'net/http'
-require_relative 'env'
+require_relative 'config'
 
 publish do |message|
+  invoke :clean
   invoke :docker
   invoke :bundle
   invoke :git, message
@@ -9,7 +10,7 @@ publish do |message|
 end
 
 backend do
-  shh 'ruby app.rb'
+  shh 'ruby src/rb/server.rb'
 end
 
 clean do
@@ -26,7 +27,15 @@ end
 
 tag = 'gcr.io/catan-274322/catan'
 docker do
+  invoke :docker_build
+  invoke :docker_push
+end
+
+docker_build do
   sh "docker build . -t #{tag}"
+end
+
+docker_push do
   sh "docker push #{tag}"
 end
 

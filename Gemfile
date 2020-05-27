@@ -8,3 +8,5 @@ gem "sinatra", "~> 2.0"
 gem "sinatra-contrib", "~> 2.0"
 
 gem "google-cloud-firestore", "~> 1.4"
+
+gem "puma", "~> 4.3"

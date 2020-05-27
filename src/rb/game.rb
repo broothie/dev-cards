@@ -6,9 +6,6 @@ class Game
   attr_accessor :discard
   attr_accessor :players
 
-  class Error < StandardError; end
-  class NotFoundError < Error; end
-
   GAMES = Google::Cloud::Firestore
     .new(project_id: 'catan-274322', credentials: 'catan.json')
     .collection('games')
@@ -18,6 +15,11 @@ class Game
     @deck = deck
     @discard = discard
     @players = players
+  end
+
+  def add_player(player)
+    players << player
+    save!
   end
 
   def draw(player)
@@ -31,20 +33,16 @@ class Game
     card
   end
 
-  def add_player(player)
-    raise 'player already exists' if player_exists?(player)
-    players << player
-    save!
-  end
-
   def player_exists?(player)
     players.include?(player)
   end
 
   def player_counts
-    discard.each_with_object(Hash.new(0)) do |discard, counts|
-      counts[discard.keys.first] += 1
-    end
+    counts = {}
+    players.each { |player| counts[player] = 0 }
+    discard.each { |discard| counts[discard.keys.first.to_s] += 1 }
+
+    counts
   end
 
   def save!
@@ -68,7 +66,8 @@ class Game
 
     def get(code)
       data = GAMES.doc(code).get.data
-      raise NotFoundError unless data
+      return nil unless data
+
       new(data)
     end
 

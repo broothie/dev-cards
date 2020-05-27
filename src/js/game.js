@@ -1,15 +1,15 @@
 import m from 'mithril';
 import _ from 'lodash';
-import * as api from "./api";
-import Cookies from "js-cookie";
+import * as api from './api';
+import Cookies from 'js-cookie';
+import code_chip from './code_chip';
+import flash from "./flash";
 
 export default () => {
     const code = m.route.param('code');
-    if (!code) m.route.set('/');
-
     const player = Cookies.get(code);
-    if (!player) m.route.set(`/game/${code}/join`, {error: 'missing player'});
 
+    let error = null;
     let remaining = null;
     let player_counts = [];
     let draw_enabled = true;
@@ -26,7 +26,7 @@ export default () => {
 
     // Updates game info
     const update = () => {
-        api.get_game(code, player)
+        api.get_game(code)
             .then(game => {
                 remaining = game.remaining;
                 player_counts = game.player_counts;
@@ -36,23 +36,36 @@ export default () => {
 
     return {
         oninit: () => {
+            api.get_game(code)
+                .catch(err => {
+                    if (err.code === 404) m.route.set('/', {error: err.response.message})
+                });
+
+            if (!player) m.route.set(`/game/${code}/join`, {error: 'missing player'});
+
             update();
             window.addEventListener('focus', update);
         },
         onremove: () => {
             window.removeEventListener('focus', update);
         },
-        view: () => m('div', [
-            m('p', ['Game code: ', m('span', {style: 'font-family:monospace;'}, code)]),
-            m('p', `Hi ${player}!`),
-            m('p', `Dev cards remaining: ${remaining}`),
-            m('button', {onclick, disabled: !draw_enabled || remaining === 0}, 'Draw a card'),
-            m('br'),
-            m('br'),
-            m('br'),
-            m('div', [
-                m('p', 'Player Counts'),
-                ..._.map(player_counts, (count, player) => m('p', `${player}: ${count}`))
+        view: () => m('main', [
+            m('header', [
+                m('h1', 'Dev Cards'),
+                code_chip(code),
+                flash(error),
+            ]),
+
+            m('section', [
+                m('p', `Hi ${player}!`),
+                m('p', `Dev cards remaining: ${remaining}`),
+                m('button', {onclick, disabled: !draw_enabled || remaining === 0}, 'Draw a card'),
+            ]),
+            m('section', [
+                m('div', [
+                    m('p', 'Player Counts'),
+                    ..._.map(player_counts, (count, player) => m('p', `${player}: ${count}`))
+                ]),
             ]),
         ])
     }

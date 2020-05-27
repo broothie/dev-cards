@@ -1,0 +1,29 @@
+
+main {
+  display: flex;
+  flex-direction: column;
+}
+
+button {
+  margin: 5px;
+}
+
+.error {
+  color: red;
+}
+
+.chip {
+  border: 1px solid darkgrey;
+  display: inline-block;
+
+  float: left;
+  padding: 1px 4px;
+  border-radius: 5px;
+  font-size: 10pt;
+  background-color: whitesmoke;
+  cursor: pointer;
+
+  span {
+    font-family: "Source Code Pro", Monaco, monospace;
+  }
+}

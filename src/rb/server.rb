@@ -6,7 +6,10 @@ require_relative 'game'
 
 before do
   headers 'Access-Control-Allow-Origin' => '*'
+  headers 'Access-Control-Allow-Methods' => '*'
 end
+
+options('*') { 200 }
 
 get '/' do
   redirect 'https://andrewbooth.xyz/dev-cards'
@@ -19,12 +22,14 @@ post '/games' do
 end
 
 # Join a game
-post '/games/:code/join' do |code|
+patch '/games/:code' do |code|
   code.downcase!
 
   game = Game.get(code)
+  bail 404, "no game found for '#{code}'" unless game
+
   player = params['player']
-  game.add_player(player)
+  game.add_player(player) unless game.player_exists?(player)
 end
 
 # Get a game
@@ -32,8 +37,7 @@ get '/games/:code' do |code|
   code.downcase!
 
   game = Game.get(code)
-  player = params['player']
-  bail 422, 'missing player' unless game.player_exists?(player)
+  bail 404, "no game found for '#{code}'" unless game
 
   json remaining: game.deck.size, player_counts: game.player_counts
 end
@@ -43,6 +47,8 @@ get '/games/:code/draw' do |code|
   code.downcase!
 
   game = Game.get(code)
+  bail 404, "no game found for '#{code}'" unless game
+
   player = params['player']
   bail 422, 'missing player' unless game.player_exists?(player)
 
@@ -50,10 +56,6 @@ get '/games/:code/draw' do |code|
   bail 404, 'no cards left' unless card
 
   json card: card
-end
-
-error Game::NotFoundError do
-  bail 404, 'game not found'
 end
 
 helpers do
