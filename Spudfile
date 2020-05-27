@@ -14,7 +14,6 @@ end
 
 # Publish
 publish do |message|
-  invoke :clean
   invoke 'publish.backend'
   invoke 'publish.frontend', message
 end
@@ -24,6 +23,7 @@ rule 'publish.backend' do
 end
 
 rule 'publish.frontend' do |message|
+  invoke :clean
   invoke :bundle
   invoke :git, message
   invoke :purge
