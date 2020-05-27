@@ -5,11 +5,12 @@ require 'json'
 require_relative 'game'
 
 before do
-  if request.options?
-    headers 'Access-Control-Allow-Origin' => '*'
-    headers 'Access-Control-Allow-Methods' => '*'
-    halt 200
-  end
+  headers 'Access-Control-Allow-Origin' => '*'
+  headers 'Access-Control-Allow-Methods' => '*'
+end
+
+options '*' do
+  200
 end
 
 get '/' do

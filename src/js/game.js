@@ -57,15 +57,13 @@ export default () => {
             ]),
 
             m('section', [
-                m('p', `Hi ${player}!`),
+                m('h4', `Hi ${player}!`),
                 m('p', `Dev cards remaining: ${remaining}`),
                 m('button', {onclick, disabled: !draw_enabled || remaining === 0}, 'Draw a card'),
             ]),
             m('section', [
-                m('div', [
-                    m('p', 'Player Counts'),
-                    ..._.map(player_counts, (count, player) => m('p', `${player}: ${count}`))
-                ]),
+                m('h4', 'Card Counts'),
+                ..._.map(player_counts, (count, player) => m('p', `${player}: ${count}`))
             ]),
         ])
     }
