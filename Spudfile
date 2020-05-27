@@ -1,14 +1,7 @@
 require 'net/http'
 require_relative 'config'
 
-publish do |message|
-  invoke :clean
-  invoke :docker
-  invoke :bundle
-  invoke :git, message
-  invoke :purge
-end
-
+# Dev
 backend do
   shh 'ruby src/rb/server.rb'
 end
@@ -19,24 +12,43 @@ clean do
   sh? 'rm -rf .byebug_history'
 end
 
-git do |message|
-  sh 'git add -A'
-  sh "git commit -m '#{message}'"
-  sh 'git push'
+# Publish
+publish do |message|
+  invoke :clean
+  invoke 'publish.backend'
+  invoke 'publish.frontend', message
 end
 
+rule 'publish.backend' do
+  invoke :docker
+end
+
+rule 'publish.frontend' do |message|
+  invoke :bundle
+  invoke :git, message
+  invoke :purge
+end
+
+# Docker
 tag = 'gcr.io/catan-274322/catan'
 docker do
   invoke :docker_build
   invoke :docker_push
 end
 
-docker_build do
+rule 'docker.build' do
   sh "docker build . -t #{tag}"
 end
 
-docker_push do
+rule 'docker.push' do
   sh "docker push #{tag}"
+end
+
+# Frontend
+git do |message|
+  sh 'git add -A'
+  sh "git commit -m '#{message}'"
+  sh 'git push'
 end
 
 purge do
