@@ -13,6 +13,10 @@ options '*' do
   200
 end
 
+get '/ping' do
+  'pong'
+end
+
 get '/' do
   redirect 'https://andrewbooth.xyz/dev-cards'
 end

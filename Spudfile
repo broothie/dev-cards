@@ -7,8 +7,8 @@ backend do
 end
 
 clean do
-  sh? 'rm -rf dist index.html'
-  sh? 'rm -rf .cache'
+  sh? 'rm -rf dist'
+  sh? 'rm -rf index.html'
   sh? 'rm -rf .byebug_history'
 end
 
