@@ -1,5 +1,4 @@
 require 'sinatra'
-require 'sinatra/reloader' if development?
 require 'sinatra/json'
 require 'json'
 require_relative 'game'
@@ -32,7 +31,7 @@ patch '/games/:code' do |code|
   code.downcase!
 
   game = Game.get(code)
-  bail 404, "no game found for '#{code}'" unless game
+  bail 404, "no game found for code '#{code}'" unless game
 
   player = params['player']
   game.add_player(player) unless game.player_exists?(player)
@@ -43,7 +42,7 @@ get '/games/:code' do |code|
   code.downcase!
 
   game = Game.get(code)
-  bail 404, "no game found for '#{code}'" unless game
+  bail 404, "no game found for code '#{code}'" unless game
 
   json remaining: game.deck.size, player_counts: game.player_counts
 end
@@ -53,15 +52,29 @@ get '/games/:code/draw' do |code|
   code.downcase!
 
   game = Game.get(code)
-  bail 404, "no game found for '#{code}'" unless game
+  bail 404, "no game found for code '#{code}'" unless game
 
   player = params['player']
+  puts players: game.players
   bail 422, 'missing player' unless game.player_exists?(player)
 
   card = game.draw(player)
   bail 404, 'no cards left' unless card
 
   json card: card
+end
+
+# Play a card
+post '/games/:code/play' do |code|
+  code.downcase!
+
+  game = Game.get(code)
+  bail 404, "no game found for code '#{code}'" unless game
+
+  player = params['player']
+  bail 422, 'missing player' unless game.player_exists?(player)
+
+  game.play(player)
 end
 
 helpers do

@@ -1,24 +1,22 @@
 require 'google/cloud/firestore'
 
 class Game
-  attr_accessor :code
-  attr_accessor :deck
-  attr_accessor :discard
-  attr_accessor :players
+  attr_reader :code
+  attr_reader :deck
+  attr_reader :players
 
   GAMES = Google::Cloud::Firestore
     .new(project_id: 'catan-274322', credentials: 'catan.json')
     .collection('games')
 
-  def initialize(code:, deck:, discard: [], players: [])
+  def initialize(code:, deck:, players: {})
     @code = code
     @deck = deck
-    @discard = discard
     @players = players
   end
 
   def add_player(player)
-    players << player
+    players[player] = { cards: [], played: 0 }
     save!
   end
 
@@ -27,20 +25,29 @@ class Game
     return nil if deck.empty?
 
     card = deck.pop
-    discard.push(player => card)
+    players[player][:cards] << card
     save!
 
     card
   end
 
+  def play(player)
+    raise 'invalid player' unless player_exists?(player)
+
+    player = players[player]
+    raise 'no cards left to play' if player[:played] >= player[:cards].count
+
+    player[:played] += 1
+    save!
+  end
+
   def player_exists?(player)
-    players.include?(player)
+    players.keys.include?(player)
   end
 
   def player_counts
     counts = {}
-    players.each { |player| counts[player] = 0 }
-    discard.each { |discard| counts[discard.keys.first.to_s] += 1 }
+    players.each { |name, data| counts[name] = { total: data[:cards].count, played: data[:played] } }
 
     counts
   end
@@ -50,7 +57,11 @@ class Game
   end
 
   def data
-    { code: code, deck: deck, discard: discard, players: players }
+    { code: code, deck: deck, players: players }
+  end
+
+  def players
+    @plyrs ||= @players.each_with_object({}) { |(key, value), hash| hash[key] = value; hash[key.to_s] = value }
   end
 
   class << self

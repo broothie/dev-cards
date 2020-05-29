@@ -2,14 +2,20 @@ import m from 'mithril';
 import Cookies from 'js-cookie';
 import * as api from './api';
 import text_input from './text_input';
-import flash from "./flash";
+import header from "./header";
 
 export default () => {
     let error = m.route.param('error');
     const data = { game_code: Cookies.get('last_game') };
 
+    let buttons_enabled = true;
+
     const create_game = type => () => {
-        api.create_game(type).then(game => reroute_to_join(game.code));
+        buttons_enabled = false;
+
+        api.create_game(type)
+            .then(game => reroute_to_join(game.code))
+            .then(() => buttons_enabled = true);
     };
 
     const reroute_to_join = code => {
@@ -26,10 +32,7 @@ export default () => {
 
     return {
         view: () => m('main', [
-            m('header', [
-                m('h1', 'Dev Cards'),
-                flash(error),
-            ]),
+            header(null, error),
             m('section', [
                 m('h2', 'Join a game'),
                 m('input', {type: 'text', placeholder: 'GAME CODE', ...key_events('game_code'), value: data.game_code}),

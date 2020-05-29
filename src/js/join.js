@@ -2,8 +2,7 @@ import m from 'mithril';
 import Cookies from 'js-cookie';
 import * as api from './api';
 import text_input from './text_input';
-import code_chip from './code_chip';
-import flash from "./flash";
+import header from './header';
 
 export default () => {
     let error = m.route.param('error');
@@ -41,11 +40,7 @@ export default () => {
             if (!!data.player) reroute_to_game(code, data.player);
         },
         view: () => m('main', [
-            m('header', [
-                m('h1', 'Dev Cards'),
-                flash(error),
-                code_chip(code),
-            ]),
+            header(code, error),
             m('section', [
                 m('h4', 'Join Game'),
                 m('input', {type: 'text', placeholder: 'NAME', ...key_events('player')}),

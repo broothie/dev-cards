@@ -11,3 +11,5 @@ export const join_game = (code, player) => m.request({method: 'PATCH', url: `${B
 export const get_game = code => m.request({method: 'GET', url: `${BASE_URL}/games/${code}`});
 
 export const draw_card = (code, player) => m.request({method: 'GET', url: `${BASE_URL}/games/${code}/draw?player=${player}`});
+
+export const play_card = (code, player) => m.request({method: 'POST', url: `${BASE_URL}/games/${code}/play?player=${player}`});
